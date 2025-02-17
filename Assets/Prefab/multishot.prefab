@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8075311409067627796}
   - component: {fileID: 9122731904598086392}
+  - component: {fileID: 6419122546840226005}
   m_Layer: 0
   m_Name: multishot
   m_TagString: Untagged
@@ -91,6 +92,23 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &6419122546840226005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2511057457189017320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00fae55fc70e7bf48bd537cfc3cd7291, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  projectilePrefab: {fileID: 1126715651216828332, guid: 0097943544251a04da6167dedbfc8c57, type: 3}
+  detectionRadius: 3
+  fireRate: 1
+  towerLevel: 1
+  maxLevel: 5
 --- !u!1 &4647133808392882365
 GameObject:
   m_ObjectHideFlags: 0

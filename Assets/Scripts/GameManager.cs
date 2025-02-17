@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
 
     private Vector3 originalCameraPos;
     private int waveNumber = 0;
+    private int enemiesRemaining = 0;
 
     void Start()
     {
@@ -28,10 +29,19 @@ public class GameManager : MonoBehaviour
         UpdateHPUI();
         StartCoroutine(CameraShake());
 
+        enemiesRemaining--; // Reduce enemy count when they reach the end
+        CheckWaveCompletion();
+
         if (playerHP <= 0)
         {
             GameOver();
         }
+    }
+
+    public void EnemyDefeated()
+    {
+        enemiesRemaining--; // Reduce enemy count when an enemy is destroyed
+        CheckWaveCompletion();
     }
 
     void UpdateHPUI()
@@ -44,8 +54,8 @@ public class GameManager : MonoBehaviour
         float elapsed = 0f;
         while (elapsed < cameraShakeDuration)
         {
-            float x = Random.Range(-1f, 1f) * cameraShakeIntensity;
-            float y = Random.Range(-1f, 1f) * cameraShakeIntensity;
+            float x = Random.Range(-0.2f, 0.2f) * cameraShakeIntensity;
+            float y = Random.Range(-0.2f, 0.2f) * cameraShakeIntensity;
             cameraTransform.position += new Vector3(x, y, 0);
             elapsed += Time.deltaTime;
             yield return null;
@@ -66,7 +76,17 @@ public class GameManager : MonoBehaviour
     public void StartNextWave()
     {
         waveNumber++;
-        int enemyCount = Mathf.FloorToInt(5 * Mathf.Pow(1.2f, waveNumber)); // Curve-based spawn
+        int enemyCount = Mathf.FloorToInt(5 * Mathf.Pow(1.2f, waveNumber));
+
+        enemiesRemaining = enemyCount; // Track the number of enemies in this wave
         FindFirstObjectByType<EnemySpawner>().StartWave(enemyCount);
+    }
+
+    void CheckWaveCompletion()
+    {
+        if (enemiesRemaining <= 0)
+        {
+            StartNextWave();
+        }
     }
 }

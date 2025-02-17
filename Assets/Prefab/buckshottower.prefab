@@ -97,6 +97,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7127562998589148948}
   - component: {fileID: 6376752054779425086}
+  - component: {fileID: -2805423283292934713}
   m_Layer: 0
   m_Name: buckshottower
   m_TagString: Untagged
@@ -175,3 +176,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &-2805423283292934713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9065774103388449093}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cb5a705d2ed5784d81f208de5febccc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  projectilePrefab: {fileID: 1126715651216828332, guid: 0097943544251a04da6167dedbfc8c57, type: 3}
+  detectionRadius: 3
+  fireRate: 1
+  towerLevel: 1
+  maxLevel: 5

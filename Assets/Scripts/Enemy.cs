@@ -11,11 +11,19 @@ public class Enemy : MonoBehaviour
     public void Initialize(bool cubic, Vector3 endPos)
     {
         isCubic = cubic;
-        start = transform.position;
+        start = transform.position; 
         end = endPos;
-        control1 = start + new Vector3(2, 3, 0);
-        control2 = start + new Vector3(-2, 3, 0);
         gameManager = FindFirstObjectByType<GameManager>();
+
+        if (isCubic)
+        {
+            control1 = start + new Vector3(-6, -2, 0);
+            control2 = start + new Vector3(4, -5, 0);
+        }
+        else
+        {
+            control1 = start + new Vector3(-8, 0, 0);
+        }
     }
 
     void Update()
@@ -27,6 +35,11 @@ public class Enemy : MonoBehaviour
             Destroy(gameObject);
         }
         transform.position = isCubic ? CubicBezier(start, control1, control2, end, t) : QuadraticBezier(start, control1, end, t);
+    }
+    
+    void OnDestroy()
+    {
+        FindFirstObjectByType<GameManager>().EnemyDefeated();
     }
 
     private Vector3 QuadraticBezier(Vector3 a, Vector3 b, Vector3 c, float t)

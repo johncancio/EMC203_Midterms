@@ -6,6 +6,7 @@ public class Enemy : MonoBehaviour
     private float t = 0f;
     private bool isCubic;
     private GameManager gameManager;
+    private bool reachedEnd = false;
 
     public void Initialize(bool cubic, Vector3 endPos)
     {
@@ -28,9 +29,10 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         t += Time.deltaTime * speed;
-        float easedTime = TweenUtils.EaseInOut(t); // Using EaseInOut for smoother animation
+        float easedTime = TweenUtils.EaseInOut(t);
         if (t >= 1)
         {
+            reachedEnd = true;
             gameManager.EnemyReachedEnd();
             Destroy(gameObject);
         }
@@ -39,9 +41,12 @@ public class Enemy : MonoBehaviour
 
     void OnDestroy()
     {
-        GameObject gold = Instantiate(gameManager.goldPrefab, transform.position, Quaternion.identity);
-        gold.GetComponent<GoldDrop>().Initialize(gameManager.goldUI.transform, 10);
-        gameManager.EnemyDefeated();
+        if (!reachedEnd) // Prevent gold drop if enemy reached the endpoint
+        {
+            GameObject gold = Instantiate(gameManager.goldPrefab, transform.position, Quaternion.identity);
+            gold.GetComponent<GoldDrop>().Initialize(gameManager.goldUI.transform, 10);
+            gameManager.EnemyDefeated();
+        }
     }
 
     private Vector3 QuadraticBezier(Vector3 a, Vector3 b, Vector3 c, float t)

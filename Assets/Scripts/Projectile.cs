@@ -11,7 +11,7 @@ public class Projectile : MonoBehaviour
 
     void Update()
     {
-        transform.position += direction * speed * Time.deltaTime; // No easing applied
+        transform.position += direction * speed * Time.deltaTime;
 
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         foreach (GameObject enemy in enemies)

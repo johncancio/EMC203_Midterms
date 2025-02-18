@@ -41,7 +41,7 @@ public class Enemy : MonoBehaviour
 
     void OnDestroy()
     {
-        if (!reachedEnd) // Prevent gold drop if enemy reached the endpoint
+        if (!reachedEnd)
         {
             GameObject gold = Instantiate(gameManager.goldPrefab, transform.position, Quaternion.identity);
             gold.GetComponent<GoldDrop>().Initialize(gameManager.goldUI.transform, 10);

@@ -86,7 +86,7 @@ public class BuckshotTower : MonoBehaviour
 
         if (GameManager.Instance != null && GameManager.Instance.SpendGold(100))
         {
-            towerLevel++; // Increase level only after spending gold
+            towerLevel++;
             spreadAngle += 0.5f;
 
             if (towerLevel == 3 || towerLevel == 5)

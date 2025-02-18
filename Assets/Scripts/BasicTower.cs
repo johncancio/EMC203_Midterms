@@ -79,7 +79,7 @@ public class BasicTower : MonoBehaviour
 
         if (GameManager.Instance != null && GameManager.Instance.SpendGold(100))
         {
-            towerLevel++; // Increase level only after spending gold
+            towerLevel++;
             detectionRadius += 0.5f;
             fireRate *= 1.2f;
             updateLevelUI();

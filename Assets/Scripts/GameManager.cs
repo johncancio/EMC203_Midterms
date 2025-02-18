@@ -2,25 +2,52 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance { get; private set; }
+
     public int playerHP = 10;
     public TMP_Text hpText;
-    public GameObject gameOverScreen;
+    public TMP_Text waveText;
+    public TMP_Text gameOverText;
     public Transform cameraTransform;
     public float cameraShakeIntensity = 0.2f;
     public float cameraShakeDuration = 0.5f;
 
+    public TMP_Text goldText;
+    public GameObject goldPrefab;
+    public Transform goldUI;
+    private int currentGold = 0;
+    private int displayedGold = 0;
+
     private Vector3 originalCameraPos;
-    private int waveNumber = 0;
+    private int waveNumber = 1;
     private int enemiesRemaining = 0;
+    private const int maxWaves = 10;
+    private bool waveInProgress = false;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     void Start()
     {
         originalCameraPos = cameraTransform.position;
         UpdateHPUI();
-        StartNextWave();
+        UpdateGoldUI();
+        UpdateWaveUI();
+        if (gameOverText != null) gameOverText.gameObject.SetActive(false);
+        StartCoroutine(StartWaveWithDelay());
     }
 
     public void EnemyReachedEnd()
@@ -29,24 +56,76 @@ public class GameManager : MonoBehaviour
         UpdateHPUI();
         StartCoroutine(CameraShake());
 
-        enemiesRemaining--; // Reduce enemy count when they reach the end
-        CheckWaveCompletion();
-
+        enemiesRemaining--;
         if (playerHP <= 0)
         {
             GameOver();
+        }
+        else if (enemiesRemaining <= 0 && waveInProgress)
+        {
+            waveInProgress = false;
+            StartNextWave();
         }
     }
 
     public void EnemyDefeated()
     {
-        enemiesRemaining--; // Reduce enemy count when an enemy is destroyed
-        CheckWaveCompletion();
+        enemiesRemaining--;
+        if (enemiesRemaining <= 0 && waveInProgress)
+        {
+            waveInProgress = false;
+            StartNextWave();
+        }
+    }
+
+    public void AddGold(int amount)
+    {
+        currentGold += amount;
+        StartCoroutine(AnimateGoldUI());
+    }
+
+    public bool SpendGold(int amount)
+    {
+        if (currentGold >= amount)
+        {
+            currentGold -= amount;
+            StartCoroutine(AnimateGoldUI());
+            return true;
+        }
+        return false;
+    }
+
+    IEnumerator AnimateGoldUI()
+    {
+        int startValue = displayedGold;
+        float elapsedTime = 0f;
+        float duration = 0.5f;
+
+        while (elapsedTime < duration)
+        {
+            displayedGold = Mathf.RoundToInt(Mathf.Lerp(startValue, currentGold, elapsedTime / duration));
+            goldText.text = displayedGold.ToString();
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        displayedGold = currentGold;
+        goldText.text = displayedGold.ToString();
     }
 
     void UpdateHPUI()
     {
         hpText.text = "HP: " + playerHP;
+    }
+
+    void UpdateGoldUI()
+    {
+        goldText.text = currentGold.ToString();
+    }
+
+    void UpdateWaveUI()
+    {
+        waveText.text = "Wave: " + waveNumber + "/" + maxWaves;
     }
 
     IEnumerator CameraShake()
@@ -56,7 +135,7 @@ public class GameManager : MonoBehaviour
         {
             float x = Random.Range(-0.2f, 0.2f) * cameraShakeIntensity;
             float y = Random.Range(-0.2f, 0.2f) * cameraShakeIntensity;
-            cameraTransform.position += new Vector3(x, y, 0);
+            cameraTransform.position = originalCameraPos + new Vector3(x, y, 0);
             elapsed += Time.deltaTime;
             yield return null;
         }
@@ -65,28 +144,44 @@ public class GameManager : MonoBehaviour
 
     void GameOver()
     {
-        gameOverScreen.SetActive(true);
+        if (gameOverText != null)
+        {
+            gameOverText.gameObject.SetActive(true);
+            gameOverText.text = "Game Over!";
+            gameOverText.enabled = true;
+        }
+        StartCoroutine(ReloadSceneAfterDelay(2f));
     }
 
-    public void RestartGame()
+    IEnumerator ReloadSceneAfterDelay(float delay)
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        yield return new WaitForSeconds(delay);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void StartNextWave()
     {
-        waveNumber++;
-        int enemyCount = Mathf.FloorToInt(5 * Mathf.Pow(1.2f, waveNumber));
-
-        enemiesRemaining = enemyCount; // Track the number of enemies in this wave
-        FindFirstObjectByType<EnemySpawner>().StartWave(enemyCount);
+        if (!waveInProgress && waveNumber <= maxWaves)
+        {
+            StartCoroutine(StartWaveWithDelay());
+        }
     }
 
-    void CheckWaveCompletion()
+    IEnumerator StartWaveWithDelay()
     {
-        if (enemiesRemaining <= 0)
+        yield return new WaitForSeconds(3f);
+        if (waveNumber <= maxWaves)
         {
-            StartNextWave();
+            waveInProgress = true;
+            int enemyCount = Mathf.FloorToInt(5 * Mathf.Pow(1.2f, waveNumber));
+            enemiesRemaining = enemyCount;
+            UpdateWaveUI();
+            FindFirstObjectByType<EnemySpawner>().StartWave(enemyCount);
+            waveNumber++;
+        }
+        else
+        {
+            GameOver();
         }
     }
 }

@@ -1,5 +1,4 @@
 using UnityEngine;
-
 public class Projectile : MonoBehaviour
 {
     public float speed = 5f;
@@ -12,10 +11,9 @@ public class Projectile : MonoBehaviour
 
     void Update()
     {
-        transform.position += direction * speed * Time.deltaTime;
+        transform.position += direction * speed * Time.deltaTime; // No easing applied
 
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
         foreach (GameObject enemy in enemies)
         {
             if ((enemy.transform.position - transform.position).magnitude < 0.3f)

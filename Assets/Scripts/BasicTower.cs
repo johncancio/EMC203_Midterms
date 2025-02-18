@@ -13,6 +13,6 @@ public class BasicTower : BaseTower
     {
         base.Upgrade();
         detectionRadius += 0.5f;
-        fireRate *= 0.9f; // Faster fire rate
+        fireRate *= 1.2f;
     }
 }

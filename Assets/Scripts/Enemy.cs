@@ -1,5 +1,4 @@
 using UnityEngine;
-
 public class Enemy : MonoBehaviour
 {
     public float speed = 2f;
@@ -29,17 +28,20 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         t += Time.deltaTime * speed;
+        float easedTime = TweenUtils.EaseInOut(t); // Using EaseInOut for smoother animation
         if (t >= 1)
         {
             gameManager.EnemyReachedEnd();
             Destroy(gameObject);
         }
-        transform.position = isCubic ? CubicBezier(start, control1, control2, end, t) : QuadraticBezier(start, control1, end, t);
+        transform.position = isCubic ? CubicBezier(start, control1, control2, end, easedTime) : QuadraticBezier(start, control1, end, easedTime);
     }
-    
+
     void OnDestroy()
     {
-        FindFirstObjectByType<GameManager>().EnemyDefeated();
+        GameObject gold = Instantiate(gameManager.goldPrefab, transform.position, Quaternion.identity);
+        gold.GetComponent<GoldDrop>().Initialize(gameManager.goldUI.transform, 10);
+        gameManager.EnemyDefeated();
     }
 
     private Vector3 QuadraticBezier(Vector3 a, Vector3 b, Vector3 c, float t)
